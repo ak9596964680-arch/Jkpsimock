@@ -1,1 +1,623 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JKPSI Mock Test Portal</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f3f5f9;
+  color: #1e293b;
+}
+
+header {
+  background: #142b4a;
+  color: white;
+  padding: 22px 16px;
+  text-align: center;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 25px;
+}
+
+header p {
+  margin-bottom: 0;
+  color: #cbd5e1;
+}
+
+.container {
+  max-width: 1050px;
+  margin: 25px auto;
+  padding: 15px;
+}
+
+.card {
+  background: white;
+  padding: 22px;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px #0000000c;
+  margin-bottom: 18px;
+}
+
+button {
+  border: none;
+  padding: 12px 18px;
+  border-radius: 7px;
+  background: #174c85;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  margin: 4px;
+}
+
+button:hover {
+  background: #10365f;
+}
+
+button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.secondary {
+  background: #64748b;
+}
+
+.warning {
+  background: #b45309;
+}
+
+.green {
+  background: #16834a;
+}
+
+#exam {
+  display: none;
+}
+
+.exam-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  font-weight: bold;
+}
+
+#timer {
+  color: #c0392b;
+  font-size: 20px;
+}
+
+.exam-layout {
+  display: grid;
+  grid-template-columns: 1fr 240px;
+  gap: 18px;
+}
+
+.question {
+  font-size: 19px;
+  font-weight: bold;
+  margin: 25px 0;
+}
+
+.option {
+  display: block;
+  border: 1px solid #dbe2ea;
+  padding: 15px;
+  border-radius: 8px;
+  margin: 12px 0;
+  cursor: pointer;
+}
+
+.option:has(input:checked) {
+  background: #e8f1ff;
+  border-color: #174c85;
+}
+
+.option input {
+  margin-right: 10px;
+}
+
+.palette {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-top: 15px;
+}
+
+.palette button {
+  padding: 10px;
+  margin: 0;
+  background: #e2e8f0;
+  color: #1e293b;
+}
+
+.palette button.answered {
+  background: #16834a;
+  color: white;
+}
+
+.palette button.review {
+  background: #d97706;
+  color: white;
+}
+
+.palette button.current {
+  outline: 3px solid #174c85;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 5px;
+  margin-top: 25px;
+}
+
+.result {
+  display: none;
+}
+
+.review-item {
+  padding: 15px 0;
+  border-bottom: 1px solid #ddd;
+}
+
+.correct {
+  color: #16834a;
+  font-weight: bold;
+}
+
+.wrong {
+  color: #c0392b;
+  font-weight: bold;
+}
+
+@media(max-width:700px) {
+  .exam-layout {
+    grid-template-columns: 1fr;
+  }
+  .container {
+    padding: 10px;
+  }
+  header h1 {
+    font-size: 21px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>JKPSI MOCK TEST PORTAL</h1>
+  <p>Practice • Evaluate • Improve</p>
+</header>
+
+<div class="container">
+
+<!-- HOME PAGE -->
+
+<div id="home" class="card">
+  <h2>Welcome to JKPSI Mock Test Series</h2>
+  <p>Prepare for your examination with realistic practice tests.</p>
+
+  <h3>Mock Test 01</h3>
+  <p>General Knowledge and General Studies</p>
+
+  <ul>
+    <li>Questions: 5 (demo test)</li>
+    <li>Duration: 120 minutes</li>
+    <li>Correct answer: +1 mark</li>
+    <li>Incorrect answer: -0.25 mark</li>
+  </ul>
+
+  <p><b>Note:</b> This is a demonstration test.
+  Actual examination settings can be adjusted later.</p>
+
+  <button onclick="startTest()">Start Mock Test</button>
+</div>
+
+<!-- EXAM PAGE -->
+
+<div id="exam">
+
+  <div class="card exam-top">
+    <span id="progress">Question 1</span>
+    <span id="timer">120:00</span>
+  </div>
+
+  <div class="exam-layout">
+
+    <div class="card">
+
+      <h3 id="subject">General Knowledge</h3>
+
+      <div class="question" id="question"></div>
+
+      <div id="options"></div>
+
+      <div class="actions">
+        <button class="secondary" onclick="previousQuestion()">
+          Previous
+        </button>
+
+        <button class="warning" onclick="markReview()">
+          Mark for Review
+        </button>
+
+        <button onclick="nextQuestion()">
+          Save & Next
+        </button>
+      </div>
+
+    </div>
+
+    <div class="card">
+
+      <h3>Question Palette</h3>
+
+      <p>Green: Answered</p>
+      <p>Orange: Review</p>
+      <p>Grey: Not Answered</p>
+
+      <div class="palette" id="palette"></div>
+
+      <hr>
+
+      <p id="attempted">Attempted: 0</p>
+
+      <button class="green" onclick="submitTest()">
+        Submit Test
+      </button>
+
+    </div>
+
+  </div>
+</div>
+
+<!-- RESULT PAGE -->
+
+<div id="result" class="card result">
+
+  <h2>Test Submitted Successfully!</h2>
+
+  <h2 id="score"></h2>
+
+  <p id="correct"></p>
+  <p id="incorrect"></p>
+  <p id="unattempted"></p>
+  <p id="percentage"></p>
+
+  <hr>
+
+  <h3>Answer Analysis</h3>
+
+  <div id="analysis"></div>
+
+  <button onclick="location.reload()">
+    Return to Homepage
+  </button>
+
+</div>
+
+</div>
+
+<script>
+
+// TEST SETTINGS
+const DURATION = 120 * 60;
+const CORRECT_MARKS = 1;
+const NEGATIVE_MARKS = 0.25;
+
+// SAMPLE QUESTIONS
+// Replace these with your actual question bank.
+
+const questions = [
+
+{
+subject: "Indian Polity",
+q: "Who is known as the Father of the Indian Constitution?",
+options: [
+"Mahatma Gandhi",
+"B. R. Ambedkar",
+"Jawaharlal Nehru",
+"Rajendra Prasad"
+],
+answer: 1,
+explanation: "Dr. B. R. Ambedkar chaired the Drafting Committee."
+},
+
+{
+subject: "Indian Polity",
+q: "Which Article of the Constitution guarantees equality before law?",
+options: [
+"Article 12",
+"Article 14",
+"Article 19",
+"Article 21"
+],
+answer: 1,
+explanation: "Article 14 provides equality before law and equal protection of laws."
+},
+
+{
+subject: "Geography",
+q: "Which river flows through the Kashmir Valley?",
+options: [
+"Ravi",
+"Beas",
+"Jhelum",
+"Sutlej"
+],
+answer: 2,
+explanation: "The Jhelum is the principal river flowing through the Kashmir Valley."
+},
+
+{
+subject: "Indian Economy",
+q: "Where is the headquarters of the Reserve Bank of India?",
+options: [
+"New Delhi",
+"Mumbai",
+"Kolkata",
+"Chennai"
+],
+answer: 1,
+explanation: "The RBI headquarters is located in Mumbai."
+},
+
+{
+subject: "General Knowledge",
+q: "Who was the first President of India?",
+options: [
+"Dr. Rajendra Prasad",
+"Dr. S. Radhakrishnan",
+"Jawaharlal Nehru",
+"Zakir Husain"
+],
+answer: 0,
+explanation: "Dr. Rajendra Prasad was India's first President."
+}
+
+];
+
+let current = 0;
+let answers = {};
+let review = [];
+let remaining = DURATION;
+let finished = false;
+let clock;
+
+// START TEST
+
+function startTest() {
+  document.getElementById("home").style.display = "none";
+  document.getElementById("exam").style.display = "block";
+
+  renderQuestion();
+  renderPalette();
+
+  clock = setInterval(() => {
+    remaining--;
+
+    let minutes = Math.floor(remaining / 60);
+    let seconds = remaining % 60;
+
+    document.getElementById("timer").innerText =
+      minutes + ":" + String(seconds).padStart(2,"0");
+
+    if (remaining <= 0) {
+      submitTest(true);
+    }
+  }, 1000);
+}
+
+// DISPLAY QUESTION
+
+function renderQuestion() {
+
+  const q = questions[current];
+
+  document.getElementById("progress").innerText =
+    "Question " + (current + 1) + " of " + questions.length;
+
+  document.getElementById("subject").innerText = q.subject;
+
+  document.getElementById("question").innerText =
+    (current + 1) + ". " + q.q;
+
+  document.getElementById("options").innerHTML =
+    q.options.map((option, i) => `
+      <label class="option">
+        <input type="radio"
+          name="answer"
+          value="${i}"
+          ${answers[current] === i ? "checked" : ""}>
+        ${String.fromCharCode(65+i)}. ${option}
+      </label>
+    `).join("");
+
+  document.querySelectorAll('input[name="answer"]').forEach(input => {
+    input.addEventListener("change", e => {
+      answers[current] = Number(e.target.value);
+      renderPalette();
+    });
+  });
+
+  renderPalette();
+}
+
+// QUESTION NAVIGATION
+
+function nextQuestion() {
+  if (current < questions.length - 1) {
+    current++;
+    renderQuestion();
+  }
+}
+
+function previousQuestion() {
+  if (current > 0) {
+    current--;
+    renderQuestion();
+  }
+}
+
+function markReview() {
+  if (!review.includes(current)) {
+    review.push(current);
+  }
+
+  renderPalette();
+
+  if (current < questions.length - 1) {
+    current++;
+    renderQuestion();
+  }
+}
+
+// QUESTION PALETTE
+
+function renderPalette() {
+
+  document.getElementById("palette").innerHTML =
+    questions.map((q, i) => {
+
+      let status = "";
+
+      if (answers[i] !== undefined) status = "answered";
+      if (review.includes(i)) status = "review";
+      if (i === current) status += " current";
+
+      return `
+        <button class="${status}"
+          onclick="goToQuestion(${i})">
+          ${i+1}
+        </button>
+      `;
+
+    }).join("");
+
+  document.getElementById("attempted").innerText =
+    "Attempted: " + Object.keys(answers).length;
+}
+
+function goToQuestion(index) {
+  current = index;
+  renderQuestion();
+}
+
+// SUBMIT TEST
+
+function submitTest(auto = false) {
+
+  if (finished) return;
+
+  if (!auto) {
+    if (!confirm("Are you sure you want to submit your test?")) {
+      return;
+    }
+  }
+
+  finished = true;
+  clearInterval(clock);
+
+  let correctCount = 0;
+  let wrongCount = 0;
+  let unattemptedCount = 0;
+
+  questions.forEach((q, i) => {
+
+    if (answers[i] === undefined) {
+      unattemptedCount++;
+    }
+    else if (answers[i] === q.answer) {
+      correctCount++;
+    }
+    else {
+      wrongCount++;
+    }
+
+  });
+
+  let score =
+    (correctCount * CORRECT_MARKS) -
+    (wrongCount * NEGATIVE_MARKS);
+
+  let percentage = (score /
+    (questions.length * CORRECT_MARKS)) * 100;
+
+  document.getElementById("exam").style.display = "none";
+
+  let result = document.getElementById("result");
+  result.style.display = "block";
+
+  document.getElementById("score").innerText =
+    "Your Score: " + score.toFixed(2) +
+    " / " + (questions.length * CORRECT_MARKS);
+
+  document.getElementById("correct").innerText =
+    "Correct Answers: " + correctCount;
+
+  document.getElementById("incorrect").innerText =
+    "Incorrect Answers: " + wrongCount;
+
+  document.getElementById("unattempted").innerText =
+    "Unattempted: " + unattemptedCount;
+
+  document.getElementById("percentage").innerText =
+    "Score Percentage: " + percentage.toFixed(2) + "%";
+
+  showAnalysis();
+}
+
+// ANSWER ANALYSIS
+
+function showAnalysis() {
+
+  document.getElementById("analysis").innerHTML =
+    questions.map((q, i) => {
+
+      let selected = answers[i];
+
+      let status = selected === undefined
+        ? "Not Attempted"
+        : selected === q.answer
+          ? "Correct"
+          : "Incorrect";
+
+      return `
+        <div class="review-item">
+          <b>Q${i+1}. ${q.q}</b>
+          <p>Your Answer: ${
+            selected === undefined
+              ? "Not Attempted"
+              : q.options[selected]
+          }</p>
+          <p>Correct Answer: ${q.options[q.answer]}</p>
+          <p class="${status === "Correct" ? "correct" : "wrong"}">
+            ${status}
+          </p>
+          <p>Explanation: ${q.explanation}</p>
+        </div>
+      `;
+
+    }).join("");
+}
+
+</script>
+
+</body>
+</html>
+
